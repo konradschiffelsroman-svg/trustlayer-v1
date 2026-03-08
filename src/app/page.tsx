@@ -24,6 +24,10 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [analisis, setAnalisis] = useState<string | null>(null);
   const [riesgosDetalle, setRiesgosDetalle] = useState<RiskItem[]>([]);
+  const [diagnostico, setDiagnostico] = useState<string | null>(null);
+  const [ingresosEnRiesgo, setIngresosEnRiesgo] = useState<string | null>(null);
+  const [solucionInmediata, setSolucionInmediata] = useState<string | null>(null);
+  const [parcheTecnico, setParcheTecnico] = useState<string | null>(null);
   const [stats, setStats] = useState([
     { label: 'Auditorías Totales', value: '0', icon: FileText, color: 'text-blue-500' },
     { label: 'Riesgos Detectados', value: '0', icon: AlertTriangle, color: 'text-red-500' },
@@ -39,6 +43,10 @@ export default function Dashboard() {
     setError(null);
     setAnalisis(null);
     setRiesgosDetalle([]);
+    setDiagnostico(null);
+    setIngresosEnRiesgo(null);
+    setSolucionInmediata(null);
+    setParcheTecnico(null);
     setLoading(true);
     try {
       const res = await fetch('/api/audit', {
@@ -56,6 +64,10 @@ export default function Dashboard() {
       ]);
       setAnalisis(data.analisis ?? null);
       setRiesgosDetalle(Array.isArray(data.riesgosDetalle) ? data.riesgosDetalle : []);
+      setDiagnostico(typeof data.diagnostico === 'string' ? data.diagnostico : null);
+      setIngresosEnRiesgo(typeof data.ingresos_en_riesgo === 'string' ? data.ingresos_en_riesgo : null);
+      setSolucionInmediata(typeof data.solucion_inmediata === 'string' ? data.solucion_inmediata : null);
+      setParcheTecnico(typeof data.parche_tecnico === 'string' ? data.parche_tecnico : null);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error desconocido');
     } finally {
@@ -68,6 +80,10 @@ export default function Dashboard() {
     setError(null);
     setAnalisis(null);
     setRiesgosDetalle([]);
+    setDiagnostico(null);
+    setIngresosEnRiesgo(null);
+    setSolucionInmediata(null);
+    setParcheTecnico(null);
     setStats([
       { label: 'Auditorías Totales', value: '0', icon: FileText, color: 'text-blue-500' },
       { label: 'Riesgos Detectados', value: '0', icon: AlertTriangle, color: 'text-red-500' },
@@ -200,6 +216,68 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {(diagnostico || ingresosEnRiesgo || solucionInmediata || parcheTecnico) && (
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {diagnostico && (
+              <div className="bg-slate-900 border border-blue-500 rounded-xl p-6 shadow-xl">
+                <h3 className="text-lg font-semibold mb-2 text-blue-400">🔍 Diagnóstico</h3>
+                <p className="text-sm text-slate-200 whitespace-pre-wrap">{diagnostico}</p>
+              </div>
+            )}
+
+            {ingresosEnRiesgo && (
+              <div className="bg-slate-900 border border-red-500 rounded-xl p-6 shadow-xl">
+                <h3 className="text-lg font-semibold mb-2 text-red-400">💸 Ingresos en Riesgo</h3>
+                <p className="text-sm text-slate-200 whitespace-pre-wrap">{ingresosEnRiesgo}</p>
+              </div>
+            )}
+
+            {solucionInmediata && (
+              <div className="bg-slate-900 border border-green-500 rounded-xl p-6 shadow-xl flex flex-col gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2 text-green-400">✅ Solución Inmediata</h3>
+                  <p className="text-sm text-slate-200 whitespace-pre-wrap">{solucionInmediata}</p>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (solucionInmediata) {
+                        void navigator.clipboard.writeText(solucionInmediata);
+                      }
+                    }}
+                    className="px-4 py-2 text-sm rounded-lg bg-green-600 hover:bg-green-500 text-white transition-colors"
+                  >
+                    Copiar frase
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {parcheTecnico && (
+              <div className="bg-slate-900 border border-yellow-500 rounded-xl p-6 shadow-xl flex flex-col gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2 text-yellow-400">🔧 Parche para tu Bot</h3>
+                  <p className="text-sm text-slate-200 whitespace-pre-wrap">{parcheTecnico}</p>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (parcheTecnico) {
+                        void navigator.clipboard.writeText(parcheTecnico);
+                      }
+                    }}
+                    className="px-4 py-2 text-sm rounded-lg bg-yellow-500 hover:bg-yellow-400 text-slate-900 transition-colors"
+                  >
+                    Copiar parche
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

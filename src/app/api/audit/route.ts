@@ -3,36 +3,20 @@ import { NextResponse } from "next/server";
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`;
 
-const AUDIT_PROMPT = `Eres un auditor de seguridad informática senior.
-Analiza el siguiente texto/documento y realiza una auditoría de seguridad lo más estructurada posible.
+const AUDIT_PROMPT = `
+Eres un Senior Revenue Engineer especialista en colivings.
+Tu objetivo es auditar este chat y arreglarlo.
 
-Responde ÚNICAMENTE con un JSON válido (sin markdown ni texto adicional) con esta estructura exacta:
+CONTEXTO DEL CHAT:
+\${chatContent}
+
+RESPONDE EXCLUSIVAMENTE EN JSON VÁLIDO SIN MARKDOWN con esta estructura exacta:
 {
-  "auditorias": 1,
-  "riesgos": <número de riesgos detectados, 0 o más>,
-  "sistemasProtegidos": <porcentaje 0-100 de aspectos bien protegidos>,
-  "analisis": "<resumen del análisis en 2-4 párrafos, con conclusiones globales>",
-  "riesgosDetalle": [
-    {
-      "id": 1,
-      "titulo": "<título corto del riesgo>",
-      "descripcion": "<descripción del riesgo y su impacto>",
-      "criticidad": "Alta" | "Media" | "Baja",
-      "area": "<área afectada, por ejemplo: Red, Aplicación Web, Datos, Identidad, Cumplimiento, Infraestructura, etc.>",
-      "recomendacion": "<acción concreta recomendada para mitigar el riesgo>"
-    }
-  ]
+  "diagnostico": "Breve explicación de por qué el bot falló",
+  "ingresos_en_riesgo": "Cálculo estimado en euros basado en estancia media de 900€/mes",
+  "solucion_inmediata": "La frase exacta que el bot debería haber dicho para cerrar la venta",
+  "parche_tecnico": "Instrucción corta para pegar en el System Prompt del bot y que no vuelva a fallar"
 }
-
-Reglas:
-- auditorias siempre es 1 (cada análisis cuenta como 1 auditoría)
-- riesgos: número total de elementos dentro de riesgosDetalle
-- sistemasProtegidos: estima qué % está bien configurado/protegido
-- analisis: resumen ejecutivo en español, claro y profesional
-- riesgosDetalle: lista priorizada (primero Alta, luego Media, luego Baja)
-- Si no se detecta ningún riesgo, devuelve riesgos = 0 y un array vacío en riesgosDetalle
-
-Texto a auditar:
 `;
 
 type RiesgoDetalle = {
@@ -50,6 +34,10 @@ type AuditJson = {
   sistemasProtegidos?: number;
   analisis?: string;
   riesgosDetalle?: RiesgoDetalle[];
+  diagnostico?: string;
+  ingresos_en_riesgo?: string;
+  solucion_inmediata?: string;
+  parche_tecnico?: string;
 };
 
 export async function POST(req: Request) {
@@ -144,6 +132,10 @@ export async function POST(req: Request) {
       sistemasProtegidos: parsed.sistemasProtegidos ?? 0,
       analisis: parsed.analisis ?? rawText,
       riesgosDetalle,
+      diagnostico: parsed.diagnostico ?? "",
+      ingresos_en_riesgo: parsed.ingresos_en_riesgo ?? "",
+      solucion_inmediata: parsed.solucion_inmediata ?? "",
+      parche_tecnico: parsed.parche_tecnico ?? "",
     };
 
     return NextResponse.json(responsePayload);
