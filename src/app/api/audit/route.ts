@@ -11,7 +11,16 @@ CONTEXTO DEL CHAT:
 
 RESPONDE SOLO EN JSON SIN MARKDOWN:
 {
-  "riesgosDetalle": [],
+  "riesgosDetalle": [
+    {
+      "id": 1,
+      "titulo": "título del riesgo",
+      "descripcion": "descripción detallada",
+      "criticidad": "Alta/Media/Baja",
+      "area": "Ventas/Cumplimiento/Experiencia",
+      "recomendacion": "qué hacer para solucionarlo"
+    }
+  ],
   "diagnostico": "por qué falló el bot",
   "ingresos_en_riesgo": "euros perdidos estimados",
   "solucion_inmediata": "frase exacta que debería haber dicho el bot",
