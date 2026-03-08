@@ -4,18 +4,18 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`;
 
 const AUDIT_PROMPT = `
-Eres un Senior Revenue Engineer especialista en colivings.
-Tu objetivo es auditar este chat y arreglarlo.
+Eres un Senior Revenue Engineer especialista en colivings. Audita este chat.
 
 CONTEXTO DEL CHAT:
 \${chatContent}
 
-RESPONDE EXCLUSIVAMENTE EN JSON VÁLIDO SIN MARKDOWN con esta estructura exacta:
+RESPONDE SOLO EN JSON SIN MARKDOWN:
 {
-  "diagnostico": "Breve explicación de por qué el bot falló",
-  "ingresos_en_riesgo": "Cálculo estimado en euros basado en estancia media de 900€/mes",
-  "solucion_inmediata": "La frase exacta que el bot debería haber dicho para cerrar la venta",
-  "parche_tecnico": "Instrucción corta para pegar en el System Prompt del bot y que no vuelva a fallar"
+  "riesgosDetalle": [],
+  "diagnostico": "por qué falló el bot",
+  "ingresos_en_riesgo": "euros perdidos estimados",
+  "solucion_inmediata": "frase exacta que debería haber dicho el bot",
+  "parche_tecnico": "instrucción para el system prompt del bot"
 }
 `;
 
