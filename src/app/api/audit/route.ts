@@ -15,7 +15,7 @@ RESPONDE SOLO EN JSON SIN MARKDOWN:
     {
       "id": 1,
       "titulo": "título del riesgo",
-      "descripcion": "descripción detallada",
+      "descripcion": "descripción detallada del problema",
       "criticidad": "Alta/Media/Baja",
       "area": "Ventas/Cumplimiento/Experiencia",
       "recomendacion": "qué hacer para solucionarlo"
