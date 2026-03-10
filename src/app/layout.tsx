@@ -1,4 +1,5 @@
 import './globals.css';
+import { SupabaseSessionProvider } from './supabase-session-provider';
 
 export default function RootLayout({
   children,
@@ -8,7 +9,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        {children}
+        <SupabaseSessionProvider>{children}</SupabaseSessionProvider>
       </body>
     </html>
   );

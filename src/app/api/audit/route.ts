@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { supabase } from "@/supabase";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`;
@@ -57,6 +58,8 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+
+    const userEmail = req.headers.get("x-user-email") ?? null;
 
     const body = await req.json();
     const promptInput = typeof body.prompt === "string" ? body.prompt : "";
@@ -146,6 +149,19 @@ export async function POST(req: Request) {
       solucion_inmediata: parsed.solucion_inmediata ?? "",
       parche_tecnico: parsed.parche_tecnico ?? "",
     };
+
+    try {
+      await supabase.from("audit_logs").insert([
+        {
+          user_email: userEmail,
+          chat_content: prompt,
+          resumen: responsePayload.analisis,
+          risk_score: responsePayload.riesgos,
+        },
+      ]);
+    } catch (logError) {
+      console.error("Error guardando audit_log:", logError);
+    }
 
     return NextResponse.json(responsePayload);
   } catch (error: unknown) {

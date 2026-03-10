@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   LayoutDashboard,
   ShieldCheck,
@@ -8,6 +8,9 @@ import {
   FileText,
   Search,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/supabase';
+import { useSession } from './supabase-session-provider';
 
 type RiskItem = {
   id?: number;
@@ -19,6 +22,8 @@ type RiskItem = {
 };
 
 export default function Dashboard() {
+  const router = useRouter();
+  const { session, loading: sessionLoading } = useSession();
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +38,16 @@ export default function Dashboard() {
     { label: 'Riesgos Detectados', value: '0', icon: AlertTriangle, color: 'text-red-500' },
     { label: 'Sistemas Protegidos', value: '0%', icon: ShieldCheck, color: 'text-green-500' },
   ]);
+
+  const userEmail = session?.user?.email ?? null;
+  const role: 'Admin' | 'Cliente' =
+    userEmail === 'konradschiffelsroman@gmail.com' ? 'Admin' : 'Cliente';
+
+  useEffect(() => {
+    if (!sessionLoading && !session) {
+      router.push('/login');
+    }
+  }, [sessionLoading, session, router]);
 
   async function handleAnalizar() {
     const text = inputText.trim();
@@ -51,7 +66,10 @@ export default function Dashboard() {
     try {
       const res = await fetch('/api/audit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(userEmail ? { 'x-user-email': userEmail } : {}),
+        },
         body: JSON.stringify({ prompt: text }),
       });
       const data = await res.json();
@@ -112,6 +130,24 @@ export default function Dashboard() {
           <div>
             <h1 className="text-3xl font-bold">Panel de Control</h1>
             <p className="text-slate-400">Hoy es un buen día para auditar con seguridad.</p>
+          </div>
+          <div className="flex items-center gap-4">
+            {userEmail && (
+              <div className="text-right text-xs text-slate-300">
+                <div className="font-medium">{userEmail}</div>
+                <div className="text-slate-400">{role === 'Admin' ? 'Rol: Admin' : 'Rol: Cliente'}</div>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                router.push('/login');
+              }}
+              className="text-sm px-4 py-2 rounded-lg border border-slate-700 hover:bg-slate-800 text-slate-200 transition-colors"
+            >
+              Cerrar sesión
+            </button>
           </div>
         </header>
 
